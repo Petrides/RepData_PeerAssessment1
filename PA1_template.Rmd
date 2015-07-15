@@ -30,7 +30,9 @@ paste("Median number of steps per day:",median(dailySteps))
 ```{r echo=TRUE}
 intervals<-unique(raw$interval)
 intervalSteps<-tapply(raw$steps,raw$interval,mean,na.rm=TRUE)
-plot(intervals,intervalSteps,type="l",xlab="interval",ylab="Mean Number of Steps",main="Mean Number of Steps by Time of Day")
+plot(intervals,intervalSteps,type="l",
+     xlab="interval",ylab="Mean Number of Steps",
+     main="Mean Number of Steps by Time of Day")
 paste("The highest average number of steps takes place at:",intervals[which.max(intervalSteps)])
 ```
 ### Imputing missing values  
