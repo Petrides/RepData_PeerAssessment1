@@ -21,21 +21,21 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 ```r
 dailySteps<-tapply(raw$steps,raw$date,sum,na.rm=TRUE)  
-hist(dailySteps,xlab="Steps",main="Number of Steps per Day",breaks=20)  
+hist(dailySteps,xlab="Steps",main="Number of Steps per Day",breaks=20,col="red")  
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
 ```r
-paste("Mean number of steps per day:",mean(dailySteps))
+paste("Mean number of steps per day:",round(mean(dailySteps),0))
 ```
 
 ```
-## [1] "Mean number of steps per day: 9354.22950819672"
+## [1] "Mean number of steps per day: 9354"
 ```
 
 ```r
-paste("Median number of steps per day:",median(dailySteps))
+paste("Median number of steps per day:",round(median(dailySteps),0))
 ```
 
 ```
@@ -50,8 +50,8 @@ paste("Median number of steps per day:",median(dailySteps))
 intervals<-unique(raw$interval)
 intervalSteps<-tapply(raw$steps,raw$interval,mean,na.rm=TRUE)
 plot(intervals,intervalSteps,type="l",
-     xlab="interval",ylab="Mean Number of Steps",
-     main="Mean Number of Steps by Time of Day")
+    xlab="interval",ylab="Mean Number of Steps",
+    main="Mean Number of Steps by Time of Day")
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
@@ -82,29 +82,32 @@ paste("The number of NA's present in the raw data set:",sum(is.na(raw$steps)))
 
 ```r
 modified<-raw
-modified$steps[is.na(modified$steps)]<-0
-# lookup<-cbind(intervals,intervalWithoutNA)
-# idx<-which(is.na(raw$steps))
+for(i in 1:length(intervals)){
+    int<-intervals[i]
+    step<-intervalSteps[i]
+    modified$steps[is.na(modified$steps) &
+        modified$interval==int]<-step
+}
 daily<-tapply(modified$steps,modified$date,sum)
-hist(daily,xlab="Steps",main="Number of Steps per Day",breaks=20)
+hist(daily,xlab="Steps",main="Number of Steps per Day",breaks=20,col="red")
 ```
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 ```r
-paste("Mean number of steps per day:",mean(daily))
+paste("Mean number of steps per day:",round(mean(daily),0))
 ```
 
 ```
-## [1] "Mean number of steps per day: 9354.22950819672"
+## [1] "Mean number of steps per day: 10766"
 ```
 
 ```r
-paste("Median number of steps per day:",median(daily))
+paste("Median number of steps per day:",round(median(daily),0))
 ```
 
 ```
-## [1] "Median number of steps per day: 10395"
+## [1] "Median number of steps per day: 10766"
 ```
 ### Are there differences in activity patterns between weekdays and weekends?  
 
@@ -123,7 +126,8 @@ weekdaySteps<-aggregate(modified$steps~modified$interval+modified$weekday, data=
 names(weekdaySteps)<-c("interval","weekday","steps")
 library(ggplot2)
 g<-ggplot(weekdaySteps, aes(interval,steps))
-g+geom_line()+facet_grid(weekday~.)
+g+geom_line()+facet_grid(weekday~.)+
+    labs(title="Mean Number of Steps by Time of Day")
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
